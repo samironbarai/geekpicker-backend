@@ -12,11 +12,24 @@ class TransactionTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
+    public function test_a_transaction_requires_a_sender_user_id()
+    {
+        $response = $this->json('POST', '/api/transactions', ['sender_user_id' => null]);
+        $response->assertJsonValidationErrors(['sender_user_id']);
+    }
+
+    public function test_a_transaction_requires_a_receiver_user_id()
+    {
+        $response = $this->json('POST', '/api/transactions', ['receiver_user_id' => null]);
+        $response->assertJsonValidationErrors(['receiver_user_id']);
+    }
+
+    public function test_a_transaction_requires_a_amount()
+    {
+        $response = $this->json('POST', '/api/transactions', ['amount' => null]);
+        $response->assertJsonValidationErrors(['amount']);
+    }
+
     public function test_transaction_submitted_successfully()
     {
         // Insert USD and EUR currency to currencies table
@@ -41,6 +54,6 @@ class TransactionTest extends TestCase
             'total' => 0,
         ]);
 
-        $this->assertTrue(true);
+        $this->assertEquals(1, Transaction::all()->count());
     }
 }
